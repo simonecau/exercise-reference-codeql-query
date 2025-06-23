@@ -772,45 +772,56 @@ module.exports = new Type('tag:yaml.org,2002:int', {
 /***/ (function(module) {
 
 function hasValidInputs(parsedWorkflow) {
-  const stepToValidate = parsedWorkflow.jobs["CodeQL-Build"].steps[1];
-  const stepKeys = Object.keys(stepToValidate);
-  const validStep =
-    stepKeys.length >= 2 &&
-    stepKeys.includes("name") &&
-    stepKeys.includes("uses")
-      ? true
-      : false;
-  if (validStep) {
-    if (stepKeys.includes("with")) {
-      const inputValues = Object.keys(stepToValidate.with);
-      if (inputValues.includes("config-file")) {
-        const configFilePath = stepToValidate.with["config-file"];
-        if (configFilePath === "./.github/codeql/codeql-config.yml") {
-          return { isValid: true, message: "Valid query config file" };
-        }
-        return {
-          isValid: false,
-          message: "Please change the config-file path to a valid path",
-        };
-      }
-      return {
-        isValid: false,
-        message:
-          "Missing 'config-file' parameter for the Initialize CodeQL step",
-      };
-    }
-
+  // Check if the workflow structure is valid
+  if (!parsedWorkflow || 
+      !parsedWorkflow.jobs || 
+      !parsedWorkflow.jobs["CodeQL-Build"] || 
+      !Array.isArray(parsedWorkflow.jobs["CodeQL-Build"].steps)) {
     return {
       isValid: false,
-      message: "Missing 'with' parameter for the Initialize CodeQL step",
+      message: "Invalid workflow structure - missing required CodeQL-Build job or steps"
     };
   }
+
+  const steps = parsedWorkflow.jobs["CodeQL-Build"].steps;
+  const initStep = steps.find(step => 
+    step.name && step.name.toLowerCase().includes('initialize codeql') ||
+    step.uses && step.uses.toLowerCase().includes('codeql-action/init')
+  );
+
+  if (!initStep) {
+    return {
+      isValid: false,
+      message: "Missing 'Initialize CodeQL' step in the workflow"
+    };
+  }
+
+  if (!initStep.with) {
+    return {
+      isValid: false,
+      message: "Missing 'with' parameter for the Initialize CodeQL step"
+    };
+  }
+
+  if (!initStep.with["config-file"]) {
+    return {
+      isValid: false,
+      message: "Missing 'config-file' parameter for the Initialize CodeQL step"
+    };
+  }
+
+  const configFilePath = initStep.with["config-file"];
+  if (configFilePath === "./.github/codeql/codeql-config.yml") {
+    return { isValid: true, message: "Valid query config file" };
+  }
+
   return {
     isValid: false,
-    message:
-      "Missing inputs for the Initialize CodeQL step.  Step should have AT LEAST 'name' and 'uses' parameters",
+    message: "Please change the config-file path to './.github/codeql/codeql-config.yml'"
   };
 }
+
+module.exports = hasValidInputs;
 
 module.exports = hasValidInputs;
 
