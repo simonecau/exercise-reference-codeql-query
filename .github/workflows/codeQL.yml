@@ -9,15 +9,15 @@ on:
       - main
 
 jobs:
-  analyze:
-    name: Analyze
+  CodeQL-Build:
+    name: CodeQL-Build
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v3
-      with:
-        config-file: .github/codeql/codeql-config.yml
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          config-file: .github/codeql/codeql-config.yml
