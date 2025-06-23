@@ -1,7 +1,11 @@
 name: "local-action"
 description: Grading action for local exercise
 author: githubtraining
-
+inputs:
+  workflow-path:
+    description: Path to the workflow file
+    required: false
+    default: .github/workflows/codeQL.yml
 runs:
-  using: node12
+  using: "node16"
   main: "dist/index.js"
