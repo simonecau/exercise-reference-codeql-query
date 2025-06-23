@@ -17,14 +17,14 @@ jobs:
     steps:
       # Checkout the repository code
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       # Initialize CodeQL with a custom configuration file
       - name: Set up CodeQL
-        uses: github/codeql-action/setup-codeql@v1
+        uses: github/codeql-action/setup-codeql@v2
         with:
           config-file: .github/codeql/codeql-config.yml
 
       # Perform CodeQL analysis
       - name: Run CodeQL analysis
-        uses: github/codeql-action/analyze@v1
+        uses: github/codeql-action/analyze@v2
