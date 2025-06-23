@@ -15,11 +15,16 @@ jobs:
       contents: read
 
     steps:
-      - name: Checkout repository
+      # Checkout the repository code
+      - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v1
+      # Initialize CodeQL with a custom configuration file
+      - name: Set up CodeQL
+        uses: github/codeql-action/setup-codeql@v1
+        with:
+          config-file: .github/codeql/codeql-config.yml
 
-      - name: Perform CodeQL Analysis
+      # Perform CodeQL analysis
+      - name: Run CodeQL analysis
         uses: github/codeql-action/analyze@v1
